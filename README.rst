@@ -19,12 +19,8 @@ TripleO architecture over an alternate backend.
 Getting started
 ---------------
 
-For testing purposes this first approximation is designed to run
-within an existing public OpenStack cloud. Spin up an initial
-instance, and install required packages:
-
-  apt-get install ansible git
-
-You will need the full source code for this repo on the starter node:
+You will need to install Ansible on the starter node you used for your
+TripleO deployment, and clone a copy of this repo (the path is not
+significant, but you may want to keep it next to tripleo-incubator):
 
   git clone git@github.com:allisonrandal/tripleo-ansible.git
