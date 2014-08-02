@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 DOCUMENTATION = '''
 ---
 inventory: heat
@@ -16,6 +17,18 @@ import argparse
 import os
 import sys
 
+from oslo.config import cfg
+
+opts = [
+        cfg.StrOpt('host', help='List details about the specific host'),
+        cfg.BoolOpt('list', help='List active hosts'),
+        cfg.MultiStrOpt('stack', help='Stack IDs or Names to inspect',
+            positional=True),
+        cfg.StrOpt('os-username'),
+        cfg.StrOpt('os-password'),
+        cfg.StrOpt('os-auth-url'),
+        ]
+
 try:
     from heatclient.v1 import client as heat_client
 except ImportError:
@@ -28,45 +41,74 @@ except ImportError:
     sys.exit(1)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description='Heat inventory module')
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--list', action='store_true',
-                       help='List active servers')
-    group.add_argument('--host', help='List details about the specific host')
-    return parser.parse_args()
+def _parse_config():
+    configs = cfg.ConfigOpts()
+    configs.register_cli_opts(opts)
+    configs(prog='heat-ansible-inventory')
+    return configs
 
-def _list(stack_name):
-    hostvars = {}
-    groups = {}
-    # XXX: need to config access details
-    client = heat_client.Client()
-    for res in client.stacks.get(stack_name).resources:
-        if res.type == 'OS::Nova::Server':
-            server = nova_client.show(res.instance_id)
-            name = server.name
-            private = [ x['addr'] for x in getattr(server,
-                                                   'addresses').itervalues().next()
-                       if x['OS-EXT-IPS:type'] == 'fixed']
-            public  = [ x['addr'] for x in getattr(server,
-                                                   'addresses').itervalues().next()
-                       if x['OS-EXT-IPS:type'] == 'floating']
+class HeatInventory(object):
+    def __init__(self, configs):
+        self.configs = configs
+        self._ksclient = None
+        self._hclient = None
 
-            addr = server.accessIPv4 or public or private
-            groups[res.instance_id] = [addr]
-            groups[server.name] = [addr]
-            # TODO: group by image name
-            hostvars[addr] = {'heat_metadata': res.metadata} 
-    inventory = {'_meta': {'hostvars': hostvars}}
-    inventory.update(groups)
-    print(json.dumps(inventory, indent=2))
+    def _list(self)
+        hostvars = {}
+        groups = {}
+        # XXX: need to config access details
+        for stack in configs.stack:
+            stack_obj = self.hclient.stacks.get(stack)
+            stack_id = stack_obj.id
+            for res in self.hclient.resources.list(stack_id):
+                if res.type == 'OS::Nova::Server':
+                    server = nova_client.show(res.instance_id)
+                    name = server.name
+                    private = [ x['addr'] for x in getattr(server,
+                                                           'addresses').itervalues().next()
+                               if x['OS-EXT-IPS:type'] == 'fixed']
+                    public  = [ x['addr'] for x in getattr(server,
+                                                           'addresses').itervalues().next()
+                               if x['OS-EXT-IPS:type'] == 'floating']
+
+                    addr = server.accessIPv4 or public or private
+                    groups[res.instance_id] = [addr]
+                    groups[server.name] = [addr]
+                    # TODO: group by image name
+                    hostvars[addr] = {'heat_metadata':
+                        self.hclient.resources.metadata(stack_id, res)}
+        inventory = {'_meta': {'hostvars': hostvars}}
+        inventory.update(groups)
+        print(json.dumps(inventory, indent=2))
+
+    @property
+    def ksclient(self):
+        if self._ksclient is None:
+            self._ksclient = keystone_client.Client(
+                    auth_url=self.configs.auth_url,
+                    username=self.configs.username,
+                    password=self.configs.password)
+        return self._ksclient
+
+    @property
+    def hclient(self):
+        if self._hclient is None:
+            ksclient = self.ksclient
+            endpoint = ksclient.service_catalog.url_for(
+                    service_type='orchestration', endpoint_type='publicURL')
+            self._hclient = heat_client.Client(
+                    endpoint=endpoint,
+                    auth_ref=ksclient.get_auth_ref())
+        return self._hclient
+
 
 def main():
-    args = parse_args()
+    configs = _parse_args()
+    hi = HeatInventory(configs)
     if args.list:
-        _list(os.environ['OS_STACK_NAME'])
+        hi.list()
     elif args.host:
-        _host(args.host)
+        hi.host()
     sys.exit(0)
 
 if __name__ == '__main__':
