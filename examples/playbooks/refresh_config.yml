@@ -1,3 +1,10 @@
+---
+# Stop and disable os-collect-config, update the collect files to contain
+# metadata objtained from heat inventory plugin, apply new configuration
+#
+# Run from the tripleo-ansible directory:
+# HEAT_INVENTORY_CONFIG=heat-ansible-inventory.conf ansible-playbook examples/playbooks/refresh_config.yml -i plugins/inventory -u heat-admin 
+
 - hosts: all
   sudo: yes
   tasks:
