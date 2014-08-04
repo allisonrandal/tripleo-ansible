@@ -114,9 +114,12 @@ class HeatInventory(object):
     def nclient(self):
         if self._nclient is None:
             ksclient = self.ksclient
+            endpoint = ksclient.service_catalog.url_for(
+                    service_type='compute', endpoint_type='publicURL')
             self._nclient = nova_client.Client(
-                    username=self.configs.username,
-                    api_key=self.configs.password,
+                    bypass_url=endpoint,
+                    username=None,
+                    api_key=None,
                     project_id=self.configs.project_id,
                     auth_url=self.configs.auth_url,
                     auth_token=ksclient.auth_token)
