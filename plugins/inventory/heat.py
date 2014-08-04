@@ -24,9 +24,9 @@ opts = [
         cfg.BoolOpt('list', help='List active hosts'),
         cfg.MultiStrOpt('stack', help='Stack IDs or Names to inspect',
             positional=True),
-        cfg.StrOpt('os-username'),
-        cfg.StrOpt('os-password'),
-        cfg.StrOpt('os-auth-url'),
+        cfg.StrOpt('username'),
+        cfg.StrOpt('password'),
+        cfg.StrOpt('auth-url'),
         ]
 
 try:
@@ -38,6 +38,12 @@ try:
     from novaclient.v1_1 import client as nova_client
 except ImportError:
     print('novaclient is required')
+    sys.exit(1)
+
+try:
+    from keystoneclient.v3 import client as keystone_client
+except ImportError:
+    print('keystoneclient is required')
     sys.exit(1)
 
 
@@ -52,17 +58,18 @@ class HeatInventory(object):
         self.configs = configs
         self._ksclient = None
         self._hclient = None
+        self._nclient = None
 
-    def _list(self)
+    def list(self):
         hostvars = {}
         groups = {}
         # XXX: need to config access details
-        for stack in configs.stack:
+        for stack in self.configs.stack:
             stack_obj = self.hclient.stacks.get(stack)
             stack_id = stack_obj.id
             for res in self.hclient.resources.list(stack_id):
-                if res.type == 'OS::Nova::Server':
-                    server = nova_client.show(res.instance_id)
+                if res.resource_type == 'OS::Nova::Server':
+                    server = self.nclient.show(res.physical_resource_id)
                     name = server.name
                     private = [ x['addr'] for x in getattr(server,
                                                            'addresses').itervalues().next()
@@ -88,6 +95,7 @@ class HeatInventory(object):
                     auth_url=self.configs.auth_url,
                     username=self.configs.username,
                     password=self.configs.password)
+            self._ksclient.authenticate()
         return self._ksclient
 
     @property
@@ -98,16 +106,29 @@ class HeatInventory(object):
                     service_type='orchestration', endpoint_type='publicURL')
             self._hclient = heat_client.Client(
                     endpoint=endpoint,
-                    auth_ref=ksclient.get_auth_ref())
+                    token=ksclient.auth_token)
         return self._hclient
+
+    @property
+    def nclient(self):
+        if self._nclient is None:
+            ksclient = self.ksclient
+            self._nclient = nova_client.Client(
+                    user=self.configs.username,
+                    password=self.configs.password,
+                    auth_token=ksclient.auth_token)
+        return self._nclient
 
 
 def main():
-    configs = _parse_args()
+    configs = _parse_config()
+    if configs.stack is None:
+       print("stack(s) is/are required")
+       sys.exit(1)
     hi = HeatInventory(configs)
-    if args.list:
+    if configs.list:
         hi.list()
-    elif args.host:
+    elif configs.host:
         hi.host()
     sys.exit(0)
 
