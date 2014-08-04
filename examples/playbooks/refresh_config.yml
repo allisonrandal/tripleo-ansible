@@ -1,0 +1,7 @@
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: "Disable os-collect-config service"
+      service: name=os-collect-config enabled=no state=stopped
+    - name: "Run os-collect-config"
+      shell: os-collect-config --force --one
