@@ -16,4 +16,4 @@ import pbr.version
 
 
 __version__ = pbr.version.VersionInfo(
-    'tripleo-ansible').version_string()
+    'tripleo_ansible').version_string()

@@ -13,13 +13,13 @@
 # under the License.
 
 """
-test_tripleo-ansible
+test_tripleo_ansible
 ----------------------------------
 
-Tests for `tripleo-ansible` module.
+Tests for `tripleo_ansible` module.
 """
 
-from tripleo-ansible.tests import base
+from tripleo_ansible.tests import base
 
 
 class TestTripleo-ansible(base.TestCase):
