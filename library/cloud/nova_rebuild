@@ -1,0 +1,173 @@
+#!/usr/bin/python
+#coding: utf-8 -*-
+
+# (c) 2013, Benno Joy <benno@ansible.com>
+# (c) 2013, John Dewey <john@dewey.ws>
+# (c) 2014, Allison Randal <allison@lohutok.net>
+#
+# This module is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this software.  If not, see <http://www.gnu.org/licenses/>.
+
+try:
+    from novaclient.v1_1 import client as nova_client
+    from novaclient import exceptions
+    import time
+except ImportError:
+    print("failed=True msg='novaclient is required for this module'")
+
+DOCUMENTATION = '''
+---
+module: nova_rebuild
+short_description: Rebuild VMs from OpenStack
+description:
+   - Rebuild (re-image) virtual machines from Openstack.
+options:
+   login_username:
+     description:
+        - login username to authenticate to keystone
+     required: true
+     default: admin
+   login_password:
+     description:
+        - Password of login user
+     required: true
+     default: 'yes'
+   login_tenant_name:
+     description:
+        - The tenant name of the login user
+     required: true
+     default: 'yes'
+   auth_url:
+     description:
+        - The keystone url for authentication
+     required: false
+     default: 'http://127.0.0.1:35357/v2.0/'
+   region_name:
+     description:
+        - Name of the region
+     required: false
+     default: None
+   name:
+     description:
+        - Name of the instance to be rebuilt
+     required: true
+     default: None
+   image_id:
+     description:
+        - The id of the image that has to be cloned
+     required: true
+     default: None
+   wait:
+     description:
+        - If the module should wait for the VM to be created.
+     required: false
+     default: 'yes'
+   wait_for:
+     description:
+        - The amount of time the module should wait for the VM to get into active state
+     required: false
+     default: 180
+requirements: ["novaclient"]
+'''
+
+EXAMPLES = '''
+# Rebuilds an existing VM with a new image
+- nova_rebuild:
+       login_username: admin
+       login_password: admin
+       login_tenant_name: admin
+       name: vm1
+       image_id: 4f905f38-e52a-43d2-b6ec-754a13ffb529
+       wait_for: 200
+'''
+
+
+def _rebuild_server(module, nova):
+    server = None
+    try:
+        servers = nova.servers.list(True, {'name': module.params['name']})
+        if servers:
+            # the {'name': module.params['name']} will also return servers
+            # with names that partially match the server name, so we have to
+            # strictly filter here
+            servers = [x for x in servers if x.name == module.params['name']]
+            if servers:
+                server = servers[0]
+    except Exception, e:
+        module.fail_json(msg = "Error in getting the server list: %s" % e.message)
+    if not server:
+        module.exit_json(changed = False, result = "not present")
+
+    bootargs = [server, module.params['image_id']]
+    try:
+        server = nova.servers.rebuild(*bootargs)
+        server = nova.servers.get(server.id)
+    except Exception, e:
+            module.fail_json( msg = "Error in rebuilding instance: %s " % e.message)
+    if module.params['wait'] == 'yes':
+        expire = time.time() + int(module.params['wait_for'])
+        while time.time() < expire:
+            try:
+                server = nova.servers.get(server.id)
+            except Exception, e:
+                    module.fail_json( msg = "Error in getting info from instance: %s " % e.message)
+            if server.status == 'ACTIVE':
+                private = [ x['addr'] for x in getattr(server, 'addresses').itervalues().next() if 'OS-EXT-IPS:type' in x and x['OS-EXT-IPS:type'] == 'fixed']
+                public  = [ x['addr'] for x in getattr(server, 'addresses').itervalues().next() if 'OS-EXT-IPS:type' in x and x['OS-EXT-IPS:type'] == 'floating']
+                module.exit_json(changed = True, id = server.id, private_ip=''.join(private), public_ip=''.join(public), status = server.status, info = server._info)
+            if server.status == 'ERROR':
+                module.fail_json(msg = "Error in rebuilding the server, please check logs")
+            time.sleep(2)
+
+        module.fail_json(msg = "Timeout waiting for the server to come up.. Please check manually")
+    if server.status == 'ERROR':
+            module.fail_json(msg = "Error in rebuilding the server.. Please check manually")
+    private = [ x['addr'] for x in getattr(server, 'addresses').itervalues().next() if x['OS-EXT-IPS:type'] == 'fixed']
+    public  = [ x['addr'] for x in getattr(server, 'addresses').itervalues().next() if x['OS-EXT-IPS:type'] == 'floating']
+    module.exit_json(changed = True, id = info['id'], private_ip=''.join(private), public_ip=''.join(public), status = server.status, info = server._info)
+
+
+def main():
+    module = AnsibleModule(
+        argument_spec                   = dict(
+        login_username                  = dict(default='admin'),
+        login_password                  = dict(required=True),
+        login_tenant_name               = dict(required='True'),
+        auth_url                        = dict(default='http://127.0.0.1:35357/v2.0/'),
+        region_name                     = dict(default=None),
+        name                            = dict(required=True),
+        image_id                        = dict(required=True),
+        wait                            = dict(default='yes', choices=['yes', 'no']),
+        wait_for                        = dict(default=180),
+        ),
+    )
+
+    nova = nova_client.Client(module.params['login_username'],
+                              module.params['login_password'],
+                              module.params['login_tenant_name'],
+                              module.params['auth_url'],
+                              region_name=module.params['region_name'],
+                              service_type='compute')
+    try:
+        nova.authenticate()
+    except exceptions.Unauthorized, e:
+        module.fail_json(msg = "Invalid OpenStack Nova credentials.: %s" % e.message)
+    except exceptions.AuthorizationFailure, e:
+        module.fail_json(msg = "Unable to authorize user: %s" % e.message)
+
+    _rebuild_server(module, nova)
+
+# this is magic, see lib/ansible/module.params['common.py
+from ansible.module_utils.basic import *
+main()
+

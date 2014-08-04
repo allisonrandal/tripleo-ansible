@@ -1,0 +1,22 @@
+- name: launch a nova instance
+  hosts: localhost
+  tasks:
+  - name: launch an instance
+    nova_compute:
+      region_name: region.x
+      state: present
+      login_username: admin
+      login_password: admin
+      login_tenant_name: admin
+      name: vm1
+      auth_url: http://127.0.0.1:35357/v2.0/
+      image_id: 4f905f38-e52a-43d2-b6ec-754a13ffb529
+      key_name: ansible_key
+      wait_for: 200
+      flavor_id: 100
+      security_groups: default 
+      nics:
+        - net-id: 34605f38-e52a-25d2-b6ec-754a13ffb723
+      meta:
+        hostname: test1
+        group: uge_master
