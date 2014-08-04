@@ -14,6 +14,7 @@ requirements: [ "heatclient" ]
 '''
 
 import argparse
+import json
 import os
 import sys
 
@@ -75,16 +76,22 @@ class HeatInventory(object):
                     private = [ x['addr'] for x in getattr(server,
                                                            'addresses').itervalues().next()
                                if x['OS-EXT-IPS:type'] == 'fixed']
+                    if private:
+                        private = private[0]
                     public  = [ x['addr'] for x in getattr(server,
                                                            'addresses').itervalues().next()
                                if x['OS-EXT-IPS:type'] == 'floating']
 
+                    if public:
+                        public = public[0]
                     addr = server.accessIPv4 or public or private
-                    groups[res.instance_id] = [addr]
+                    groups[res.physical_resource_id] = [addr]
                     groups[server.name] = [addr]
                     # TODO: group by image name
+                    import pdb; pdb.set_trace()
                     hostvars[addr] = {'heat_metadata':
-                        self.hclient.resources.metadata(stack_id, res)}
+                        self.hclient.resources.metadata(
+                            stack_id, res.resource_name)}
         inventory = {'_meta': {'hostvars': hostvars}}
         inventory.update(groups)
         print(json.dumps(inventory, indent=2))
