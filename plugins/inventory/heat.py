@@ -16,6 +16,7 @@ requirements: [ "heatclient" ]
 import argparse
 import json
 import os
+import re
 import sys
 
 from oslo.config import cfg
@@ -29,6 +30,7 @@ opts = [
         cfg.StrOpt('password'),
         cfg.StrOpt('auth-url'),
         cfg.StrOpt('project-id'),
+        cfg.StrOpt('group-regex'),
         ]
 
 try:
@@ -87,7 +89,15 @@ class HeatInventory(object):
                     addr = server.accessIPv4 or public or private
                     groups[res.physical_resource_id] = [addr]
                     groups[server.name] = [addr]
-                    # TODO: group by image name
+                    if self.configs.group_regex:
+                        group_name = re.search(
+                                self.configs.group_regex, res.resource_name)
+                        if group_name:
+                            group_name = group_name.group(0)
+                            if group_name in groups:
+                                groups[group_name].append(addr)
+                            else:
+                                groups[group_name] = [addr]
                     hostvars[addr] = {'heat_metadata':
                         json.dumps(self.hclient.resources.metadata(
                             stack_id, res.resource_name))}
