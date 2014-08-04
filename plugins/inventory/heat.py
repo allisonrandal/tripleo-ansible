@@ -89,8 +89,8 @@ class HeatInventory(object):
                     groups[server.name] = [addr]
                     # TODO: group by image name
                     hostvars[addr] = {'heat_metadata':
-                        self.hclient.resources.metadata(
-                            stack_id, res.resource_name)}
+                        json.dumps(self.hclient.resources.metadata(
+                            stack_id, res.resource_name))}
         inventory = {'_meta': {'hostvars': hostvars}}
         inventory.update(groups)
         print(json.dumps(inventory, indent=2))
