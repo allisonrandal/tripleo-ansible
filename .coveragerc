@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = tripleo-ansible
+omit = tripleo-ansible/tests/*,tripleo-ansible/openstack/*
+
+[report]
+ignore-errors = True
