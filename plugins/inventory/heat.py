@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 DOCUMENTATION = '''
 ---
 inventory: heat
