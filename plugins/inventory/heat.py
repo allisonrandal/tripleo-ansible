@@ -27,6 +27,7 @@ opts = [
         cfg.StrOpt('username'),
         cfg.StrOpt('password'),
         cfg.StrOpt('auth-url'),
+        cfg.StrOpt('project-id'),
         ]
 
 try:
@@ -69,7 +70,7 @@ class HeatInventory(object):
             stack_id = stack_obj.id
             for res in self.hclient.resources.list(stack_id):
                 if res.resource_type == 'OS::Nova::Server':
-                    server = self.nclient.show(res.physical_resource_id)
+                    server = self.nclient.servers.get(res.physical_resource_id)
                     name = server.name
                     private = [ x['addr'] for x in getattr(server,
                                                            'addresses').itervalues().next()
@@ -114,8 +115,10 @@ class HeatInventory(object):
         if self._nclient is None:
             ksclient = self.ksclient
             self._nclient = nova_client.Client(
-                    user=self.configs.username,
-                    password=self.configs.password,
+                    username=self.configs.username,
+                    api_key=self.configs.password,
+                    project_id=self.configs.project_id,
+                    auth_url=self.configs.auth_url,
                     auth_token=ksclient.auth_token)
         return self._nclient
 
