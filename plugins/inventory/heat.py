@@ -88,7 +88,6 @@ class HeatInventory(object):
                     groups[res.physical_resource_id] = [addr]
                     groups[server.name] = [addr]
                     # TODO: group by image name
-                    import pdb; pdb.set_trace()
                     hostvars[addr] = {'heat_metadata':
                         self.hclient.resources.metadata(
                             stack_id, res.resource_name)}
