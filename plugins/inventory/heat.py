@@ -52,9 +52,14 @@ except ImportError:
 
 
 def _parse_config():
+    default_config = os.environ.get('HEAT_INVENTORY_CONFIG')
+    if default_config:
+        default_config = [default_config]
+
     configs = cfg.ConfigOpts()
     configs.register_cli_opts(opts)
-    configs(prog='heat-ansible-inventory')
+    configs(prog='heat-ansible-inventory',
+            default_config_files=default_config)
     return configs
 
 class HeatInventory(object):
