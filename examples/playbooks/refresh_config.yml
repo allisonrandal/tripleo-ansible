@@ -1,0 +1,15 @@
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: "Disable os-collect-config service"
+      service: name=os-collect-config enabled=no state=stopped
+    - name: "Write out metadata"
+      template:
+        src: templates/host_metadata.json.j2
+        dest: /var/lib/os-collect-config/heat_local.json
+    - name: "Write out os-collect-config sources file"
+      template:
+        src: templates/os_config_files.json.j2
+        dest: /var/lib/os-collect-config/os_config_files.json
+    - name: "Run os-collect-config"
+      shell: os-collect-config --force --one
