@@ -75,6 +75,9 @@ class HeatInventory(object):
         # XXX: need to config access details
         for stack in self.configs.stack:
             stack_obj = self.hclient.stacks.get(stack)
+            if stack_obj.status != 'COMPLETE':
+                print(stack + " stack is incomplete, in state " + stack_obj.status)
+                sys.exit(1)
             stack_id = stack_obj.id
             for res in self.hclient.resources.list(stack_id):
                 if res.resource_type == 'OS::Nova::Server':
