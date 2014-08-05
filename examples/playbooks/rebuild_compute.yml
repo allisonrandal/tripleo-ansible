@@ -3,13 +3,5 @@
 - name: rebuild a nova instance
   hosts: localhost
   tasks:
-  - name: rebuild an instance
-    nova_rebuild:
-      login_username: "{{ os_username }}"
-      login_password: "{{ os_password }}"
-      login_tenant_name: "{{ os_tenant_name }}"
-      auth_url: "{{ os_auth_url }}"
-      region_name: "{{ os_region_name }}"
-      name: vm1
-      image_id: 4f905f38-e52a-43d2-b6ec-754a13ffb529
-      wait_for: 200
+  roles:
+      - { role: rebuild_compute, name: vm1, image_id: 4f905f38-e52a-43d2-b6ec-754a13ffb529 }
