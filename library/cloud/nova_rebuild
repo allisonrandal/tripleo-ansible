@@ -69,6 +69,11 @@ options:
         - The id of the image that has to be cloned
      required: true
      default: None
+   preserve_ephemeral:
+     description:
+        - Whether to preserve ephemeral storage on the instance
+     required: false
+     default: false
    wait:
      description:
         - If the module should wait for the VM to be created.
@@ -155,8 +160,11 @@ def _rebuild_server(module, nova):
         module.exit_json(changed = False, result = "not present")
 
     bootargs = [server, module.params['image_id']]
+    bootkwargs = {
+                'preserve_ephemeral' : module.params['preserve_ephemeral'],
+    }
     try:
-        server = nova.servers.rebuild(*bootargs)
+        server = nova.servers.rebuild(*bootargs, **bootkwargs)
         server = nova.servers.get(server.id)
     except Exception, e:
             module.fail_json( msg = "Error in rebuilding instance: %s " % e.message)
@@ -188,6 +196,7 @@ def main():
     argument_spec.update(dict(
         name                            = dict(required=True),
         image_id                        = dict(required=True),
+        preserve_ephemeral              = dict(default=False, choices=[True, False]),
         wait                            = dict(default='yes', choices=['yes', 'no']),
         wait_for                        = dict(default=180),
     ))
