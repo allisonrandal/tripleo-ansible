@@ -11,7 +11,7 @@
     key_name: "{{ key_name }}"
     wait_for: "{{ wait_for }}"
     flavor_id: "{{ flavor_id }}"
-    security_groups: default 
+    security_groups: default
     nics:
       - net-id: "{{ net_id }}"
     meta:
