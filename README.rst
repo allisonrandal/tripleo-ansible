@@ -21,6 +21,35 @@ Getting started
 
 You will need to install Ansible on the starter node you used for your
 TripleO deployment, and clone a copy of this repo (the path is not
-significant, but you may want to keep it next to tripleo-incubator):
+significant, but you may want to keep it next to tripleo-incubator)::
 
   git clone git@github.com:allisonrandal/tripleo-ansible.git
+
+Auth Vars
+---------
+
+Copy the example auth var file to auth_vars.yaml and edit it to add your
+auth inforamation::
+
+  cp examples/playbooks/auth_vars.yml.ex examples/playbooks/auth_vars.yml
+
+Launch a node
+-------------
+
+Set the heat inventory config and run the launch playbook::
+
+  HEAT_INVENTORY_CONFIG=heat-ansible-inventory.conf ansible-playbook examples/playbooks/launch_node.yml -i plugins/inventory/heat.py
+
+Rebuild a node
+--------------
+
+Set the heat inventory config and run the rebuild playbook::
+
+  HEAT_INVENTORY_CONFIG=heat-ansible-inventory.conf ansible-playbook examples/playbooks/rebuild_node.yml -i plugins/inventory/heat.py
+
+Trigger a config update
+-----------------------
+
+Set the heat inventory config and run the refresh config playbook::
+
+  HEAT_INVENTORY_CONFIG=heat-ansible-inventory.conf ansible-playbook examples/playbooks/refresh_config.yml -i plugins/inventory/heat.py -u heat-admin 

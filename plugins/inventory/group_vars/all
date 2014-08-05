@@ -1,0 +1,3 @@
+---
+wait_for: 200
+key_name: ansible_key
