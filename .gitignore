@@ -49,3 +49,5 @@ ChangeLog
 # Editors
 *~
 .*.swp
+
+examples/playbooks/auth_vars.yml

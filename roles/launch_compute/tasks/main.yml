@@ -1,0 +1,19 @@
+- name: launch an instance
+  nova_compute:
+    state: present
+    login_username: "{{ os_username }}"
+    login_password: "{{ os_password }}"
+    login_tenant_name: "{{ os_tenant_name }}"
+    auth_url: "{{ os_auth_url }}"
+    region_name: "{{ os_region_name }}"
+    name: "{{ name }}"
+    image_id: "{{ image_id }}"
+    key_name: "{{ key_name }}"
+    wait_for: "{{ wait_for }}"
+    flavor_id: "{{ flavor_id }}"
+    security_groups: default 
+    nics:
+      - net-id: "{{ net_id }}"
+    meta:
+      hostname: "{{ hostname }}"
+      group: "{{ group }}"

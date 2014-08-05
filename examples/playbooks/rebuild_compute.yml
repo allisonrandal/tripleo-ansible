@@ -1,13 +1,7 @@
+- include_vars: auth_vars.yml
+
 - name: rebuild a nova instance
   hosts: localhost
   tasks:
-  - name: rebuild an instance
-    nova_rebuild:
-      region_name: region.x
-      login_username: admin
-      login_password: admin
-      login_tenant_name: admin
-      auth_url: http://127.0.0.1:35357/v2.0/
-      name: vm1
-      image_id: 4f905f38-e52a-43d2-b6ec-754a13ffb529
-      wait_for: 200
+  roles:
+      - { role: rebuild_compute, name: vm1, image_id: 4f905f38-e52a-43d2-b6ec-754a13ffb529 }
