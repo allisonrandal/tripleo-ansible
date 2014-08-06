@@ -1,0 +1,11 @@
+# This is a simple ansible 'hosts' file. A hosts file is only used for
+# static lists of hosts that ansible will operate on. (Most operations
+# in the Ansible update process will be on a set of hosts pulled
+# dynamically from Heat.)
+#
+# In the simple update playbook
+# (examples/playbooks/simple_rebuild.yml), the only host Ansible
+# interacts with directly is localhost, as the update itself runs
+# through Nova.
+
+localhost ansible_connection=local

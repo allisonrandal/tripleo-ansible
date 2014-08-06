@@ -20,10 +20,57 @@ Getting started
 ---------------
 
 You will need to install Ansible on the starter node you used for your
-TripleO deployment, and clone a copy of this repo (the path is not
-significant, but you may want to keep it next to tripleo-incubator)::
+TripleO deployment. It is recommended to use a source checkout of
+Ansible method at the moment, because some packages on some distros
+don't yet support needed features. The path is not significant, but
+you may want to keep it next to tripleo-incubator::
 
+  cd $TRIPLEO_ROOT
+  git clone git://github.com/ansible/ansible.git
+
+Set up the environment variables for operation of Ansible from the
+source tree::
+
+  cd $TRIPLEO_ROOT/ansible
+  source ./hacking/env-setup
+
+Then clone a copy of this repo (again, the path is not significant)::
+
+  cd $TRIPLEO_ROOT
   git clone git@github.com:allisonrandal/tripleo-ansible.git
+
+Finally, copy one module from tripleo-ansible into the Ansible source
+tree::
+
+  cp $TRIPLEO_ROOT/tripleo-ansible/library/cloud/nova_rebuild \
+     $TRIPLEO_ROOT/ansible/library/cloud/nova_rebuild
+
+Simple Update
+-------------
+
+The best way to start understanding the Ansible update process is by
+doing a simple single-node update. Make a copy of the Ansible
+playbook examples/playbooks/simple_rebuild.yml, and update it with:
+
+ * the credentials for your cloud
+ * the name of the node you want to update
+ * the new image_id to apply to the node
+ * the option to preserve the ephemeral partition on the node
+
+Then run the playbook to update the node::
+
+  ansible-playbook simple_rebuild.yml -i $TRIPLEO_ROOT/tripleo-ansible/examples/hosts_local
+
+The node will cycle through status REBUILD, then back to ACTIVE when
+it is done updating. Note that rebuilds are slower with the
+preserve_ephemeral option enabled.
+
+
+The complete update playbooks add extra features, like pulling
+metadata from Heat and the OS_* environment variables, and iterating
+over all nodes in a cloud. But, starting with the simple update
+highlights how cleanly and crisply the update feature is expressed
+within Ansible.
 
 Auth Vars
 ---------

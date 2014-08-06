@@ -1,0 +1,14 @@
+- name: rebuild a nova instance
+  hosts: localhost
+  tasks:
+  - name: rebuild an instance
+    nova_rebuild:
+      region_name: regionOne
+      login_username: admin
+      login_password: setpassword
+      login_tenant_name: admin
+      auth_url: http://192.0.2.3:5000/v2.0
+      name: overcloud-NovaCompute-setvmname
+      image_id: 6663f30c-fff8-4c67-b0a9-fc72193b9eea
+      preserve_ephemeral: yes
+      wait_for: 200
