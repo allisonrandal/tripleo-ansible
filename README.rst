@@ -34,6 +34,12 @@ source tree::
   cd $TRIPLEO_ROOT/ansible
   source ./hacking/env-setup
 
+You may need to install some dependencies::
+
+  sudo pip install paramiko PyYAML jinja2 httplib2
+  sudo pip install oslo.config
+  sudo pip install python-novaclient python-heatclient
+
 Then clone a copy of this repo (again, the path is not significant)::
 
   cd $TRIPLEO_ROOT
