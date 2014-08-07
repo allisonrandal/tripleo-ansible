@@ -77,32 +77,3 @@ metadata from Heat and the OS_* environment variables, and iterating
 over all nodes in a cloud. But, starting with the simple update
 highlights how cleanly and crisply the update feature is expressed
 within Ansible.
-
-Auth Vars
----------
-
-Copy the example auth var file to auth_vars.yaml and edit it to add your
-auth inforamation::
-
-  cp examples/playbooks/auth_vars.yml.ex examples/playbooks/auth_vars.yml
-
-Launch a node
--------------
-
-Set the heat inventory config and run the launch playbook::
-
-  HEAT_INVENTORY_CONFIG=heat-ansible-inventory.conf ansible-playbook examples/playbooks/launch_node.yml -i plugins/inventory/heat.py
-
-Rebuild a node
---------------
-
-Set the heat inventory config and run the rebuild playbook::
-
-  HEAT_INVENTORY_CONFIG=heat-ansible-inventory.conf ansible-playbook examples/playbooks/rebuild_node.yml -i plugins/inventory/heat.py
-
-Trigger a config update
------------------------
-
-Set the heat inventory config and run the refresh config playbook::
-
-  HEAT_INVENTORY_CONFIG=heat-ansible-inventory.conf ansible-playbook examples/playbooks/refresh_config.yml -i plugins/inventory/heat.py -u heat-admin 
