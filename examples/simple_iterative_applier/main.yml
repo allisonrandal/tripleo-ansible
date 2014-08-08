@@ -1,0 +1,19 @@
+- name: rebuild an instance
+  hosts: localhost
+  vars:
+    os_username: "{{ lookup('env','OS_USERNAME') }}" 
+    os_tenant_name: "{{ lookup('env','OS_TENANT_NAME') }}" 
+    os_password: "{{ lookup('env','OS_PASSWORD') }}" 
+    os_auth_url: "{{ lookup('env','OS_AUTH_URL') }}"
+  tasks:
+  - name: rebuild an instance
+    nova_rebuild:
+      region_name: regionOne
+      login_username: "{{ os_username }}"
+      login_password: "{{ os_password }}"
+      login_tenant_name: "{{ os_tenant_name}}"
+      auth_url: "{{ os_auth_url }}"
+      name: "{{ name }}"
+      image_id: "{{ image_id }}"
+      preserve_ephemeral: yes
+      wait_for: 300
