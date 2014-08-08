@@ -19,4 +19,4 @@
         src: templates/host_metadata.json.j2
         dest: /var/lib/os-collect-config/local-data/host_metadata.json
     - name: "Run os-collect-config"
-      shell: os-collect-config --force --one
+      command: os-collect-config --force --one
