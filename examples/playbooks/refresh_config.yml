@@ -10,6 +10,10 @@
   tasks:
     - name: "Disable os-collect-config service"
       service: name=os-collect-config enabled=no state=stopped
+    - name: "Reconfigure os-collect-config for local collector"
+      copy:
+        src: files/os-collect-config.conf
+        dest: /etc/os-collect-config.conf
     - name: "Write out metadata"
       template:
         src: templates/host_metadata.json.j2
