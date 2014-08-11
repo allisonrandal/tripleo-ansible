@@ -1,0 +1,24 @@
+- name: rebuild using heat facts
+  hosts: localhost
+  tasks:
+  - name: gather facts from heat
+    local_action:
+        module: heat_facts
+        region_name: regionOne
+        login_username: admin
+        login_password: setpassword
+        login_tenant_name: admin
+        auth_url: http://192.0.2.1:5000/v3
+        stacks: all
+  - name: rebuild all instances
+    nova_rebuild:
+      region_name: regionOne
+      login_username: admin
+      login_password: setpassword
+      login_tenant_name: admin
+      auth_url: http://192.0.2.1:5000/v2.0
+      name: "{{ item.key }}"
+      image_id: "{{ item.value.heat_image.id }}"
+      preserve_ephemeral: yes 
+      wait_for: 200
+    with_dict: heat_instances
