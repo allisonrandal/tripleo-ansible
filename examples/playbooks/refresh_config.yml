@@ -1,19 +1,9 @@
 ---
-# Stop and disable os-collect-config, update the collect files to contain
-# metadata objtained from heat inventory plugin, apply new configuration
+# Update the collect files to contain metadata obtained from Heat
 #
-# Run from the tripleo-ansible directory:
-# HEAT_INVENTORY_CONFIG=heat-ansible-inventory.conf ansible-playbook examples/playbooks/refresh_config.yml -i plugins/inventory -u heat-admin 
-
 - hosts: all
   sudo: yes
   tasks:
-    - name: "Disable os-collect-config service"
-      service: name=os-collect-config enabled=no state=stopped
-    - name: "Reconfigure os-collect-config for local collector"
-      copy:
-        src: files/os-collect-config.conf
-        dest: /etc/os-collect-config.conf
     - name: "Write out metadata"
       template:
         src: templates/host_metadata.json.j2

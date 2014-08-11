@@ -1,0 +1,14 @@
+---
+# Stop and disable os-collect-config
+#
+# Run from the tripleo-ansible directory:
+#
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: "Disable os-collect-config service"
+      service: name=os-collect-config enabled=no state=stopped
+    - name: "Reconfigure os-collect-config for local collector"
+      copy:
+        src: files/os-collect-config.conf
+        dest: /etc/os-collect-config.conf
