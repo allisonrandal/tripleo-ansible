@@ -44,10 +44,10 @@ vars:
 tasks:
   - include: disable_os_collect_config.yml
   - include: stop_cloud.yml control-services={{overcloud-control-services}} compute-services={{overcloud-compute-services}} undercloud-services={{undercloud-services}}
-  - include: rebuild.yml role=undercloud
-  - include: refresh_config.yml role=undercloud
-  - include: rebuild.yml role=controller
-  - include: refresh_config.yml role=controller
-  - include: rebuild.yml role=compute
-  - include: refresh_config.yaml role=compute
+  - include: rebuild.yml group=undercloud
+  - include: refresh_config.yml group=undercloud
+  - include: rebuild.yml group=controller
+  - include: refresh_config.yml group=controller
+  - include: rebuild.yml group=compute
+  - include: refresh_config.yaml group=compute
   - include: start_cloud.yml control-services={{overcloud-control-services}} compute-services={{overcloud-compute-services}} undercloud-services={{undercloud-services}}

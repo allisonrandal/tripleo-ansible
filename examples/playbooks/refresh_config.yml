@@ -1,7 +1,7 @@
 ---
 # Update the collect files to contain metadata obtained from Heat
 #
-- hosts: all
+- hosts: '{{ group | default=all }}'
   sudo: yes
   tasks:
     - name: "Write out metadata"
