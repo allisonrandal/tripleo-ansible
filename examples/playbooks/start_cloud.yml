@@ -1,0 +1,13 @@
+---
+- hosts: nova-compute
+  name: "Enable OpenStack Compute"
+  service: name={{ item }} enabled=yes state=started
+  with_items: "{{ compute-services | reverse }}"
+- hosts: controller
+  name: "Enable OpenStack Controller Services"
+  service: name={{ item }} enabled=yes state=started
+  with_items: "{{ control-services | reverse }}"
+- hosts: undercloud
+  name: "Enable OpenStack Undercloud Services"
+  service: name={{ item }} enabled=yes state=started
+  with_items: "{{ undercloud-services | reverse }}"

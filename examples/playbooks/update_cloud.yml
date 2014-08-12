@@ -1,0 +1,53 @@
+---
+vars:
+  overcloud-control-services:
+    - horizon
+    - heat-api
+    - heat-api-cfn
+    - heat-api-cloudwatch
+    - heat-engine
+    - glance-api
+    - cinder-api
+    - nova-api
+    - keystone
+    - neutron-server
+    - swift-proxy
+    - glance-registry
+    - cinder-scheduler
+    - nova-scheduler
+    - nova-conductor
+    - neutron-l3-agent
+    - neutron-metadata-agent
+    - neutron-dhcp-agent
+  overcloud-compute-services:
+    - nova-compute
+    - nova-novncproxy
+    - neutron-openvswitch-agent
+  undercloud-services:
+    - horizon
+    - glance-api
+    - heat-api
+    - heat-api-cfn
+    - heat-api-cloudwatch
+    - heat-engine
+    - ironic-api
+    - nova-api
+    - keystone
+    - neutron-server
+    - swift-proxy
+    - glance-registry
+    - nova-scheduler
+    - nova-conductor
+    - neutron-metadata-agent
+    - neutron-dhcp-agent
+    - ironic-conductor
+tasks:
+  - include: disable_os_collect_config.yml
+  - include: stop_cloud.yml control-services={{overcloud-control-services}} compute-services={{overcloud-compute-services}} undercloud-services={{undercloud-services}}
+  - include: rebuild.yml role=undercloud
+  - include: refresh_config.yml role=undercloud
+  - include: rebuild.yml role=controller
+  - include: refresh_config.yml role=controller
+  - include: rebuild.yml role=compute
+  - include: refresh_config.yaml role=compute
+  - include: start_cloud.yml control-services={{overcloud-control-services}} compute-services={{overcloud-compute-services}} undercloud-services={{undercloud-services}}

@@ -1,0 +1,13 @@
+---
+- hosts: controller
+  name: "Disable OpenStack Controller Services"
+  service: name={{ item }} enabled=no state=stopped
+  with_items: "{{ control-services }}"
+- hosts: nova-compute
+  name: "Disable OpenStack Compute"
+  service: name={{ item }} enabled=no state=stopped
+  with_items: "{{ compute-services }}"
+- hosts: undercloud
+  name: "Disable OpenStack Undercloud Services"
+  service: name={{ item }} enabled=no state=stopped
+  with_items: "{{ undercloud-services }}"
