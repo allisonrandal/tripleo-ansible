@@ -1,12 +1,11 @@
 ---
 # Update the collect files to contain metadata obtained from Heat
 #
-- hosts: '{{ group | default=all }}'
+- name: "Write out metadata"
   sudo: yes
-  tasks:
-    - name: "Write out metadata"
-      template:
-        src: templates/host_metadata.json.j2
-        dest: /var/lib/os-collect-config/local-data/host_metadata.json
-    - name: "Run os-collect-config"
-      command: os-collect-config --force --one
+  template:
+    src: templates/host_metadata.json.j2
+    dest: /var/lib/os-collect-config/local-data/host_metadata.json
+- name: "Run os-collect-config"
+  sudo: yes
+  command: os-collect-config --force --one

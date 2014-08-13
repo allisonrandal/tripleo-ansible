@@ -1,0 +1,42 @@
+all:
+  overcloud-control-services:
+    - horizon
+    - heat-api
+    - heat-api-cfn
+    - heat-api-cloudwatch
+    - heat-engine
+    - glance-api
+    - cinder-api
+    - nova-api
+    - keystone
+    - neutron-server
+    - swift-proxy
+    - glance-registry
+    - cinder-scheduler
+    - nova-scheduler
+    - nova-conductor
+    - neutron-l3-agent
+    - neutron-metadata-agent
+    - neutron-dhcp-agent
+  overcloud-compute-services:
+    - nova-compute
+    - nova-novncproxy
+    - neutron-openvswitch-agent
+  undercloud-services:
+    - horizon
+    - glance-api
+    - heat-api
+    - heat-api-cfn
+    - heat-api-cloudwatch
+    - heat-engine
+    - ironic-api
+    - nova-api
+    - keystone
+    - neutron-server
+    - swift-proxy
+    - glance-registry
+    - nova-scheduler
+    - nova-conductor
+    - neutron-metadata-agent
+    - neutron-dhcp-agent
+    - ironic-conductor

@@ -1,6 +1,5 @@
 ---
-- hosts: "{{ group | default=all }}"
-  name: "Rebuild with new image"
+- name: "Call nova_rebuild"
   nova_rebuild:
     instance_id: "{{ instance_id }}"
     image_id: "{{ rebuild_image_id }}"
