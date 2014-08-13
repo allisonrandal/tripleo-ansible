@@ -140,6 +140,39 @@ class HeatInventory(object):
         inventory.update(groups)
         print(json.dumps(inventory, indent=2))
 
+    def host(self):
+        hostvars = {}
+        groups = {}
+
+        for stack_obj in self.stacks:
+            if stack_obj.status != 'COMPLETE':
+                print(stack + " stack is incomplete, in state " + stack_obj.status)
+                sys.exit(1)
+            stack_id = stack_obj.id
+            for res in self.hclient.resources.list(stack_id):
+                if res.resource_type == 'OS::Nova::Server':
+                    server = self.nclient.servers.get(res.physical_resource_id)
+                    if self.configs.host in server.name:
+                        name = server.name
+                        private = [ x['addr'] for x in getattr(server,
+                                                               'addresses').itervalues().next()
+                                   if x['OS-EXT-IPS:type'] == 'fixed']
+                        if private:
+                            private = private[0]
+                        public  = [ x['addr'] for x in getattr(server,
+                                                               'addresses').itervalues().next()
+                                   if x['OS-EXT-IPS:type'] == 'floating']
+
+                        if public:
+                            public = public[0]
+                        addr = server.accessIPv4 or public or private
+                        hostvars = {'heat_metadata':
+                            self.hclient.resources.metadata(
+                                stack_id, res.resource_name)}
+                        hostvars['instance_id'] = res.physical_resource_id
+                        print(json.dumps(hostvars, indent=2))
+            break
+
     @property
     def ksclient(self):
         if self._ksclient is None:
