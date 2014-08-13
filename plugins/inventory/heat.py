@@ -121,7 +121,7 @@ class HeatInventory(object):
                     hostvars[addr] = {'heat_metadata':
                         self.hclient.resources.metadata(
                             stack_id, res.resource_name)}
-                    hostvars[addr]['instance-id'] = res.physical_resource_id
+                    hostvars[addr]['instance_id'] = res.physical_resource_id
         inventory = {'_meta': {'hostvars': hostvars}}
         inventory.update(groups)
         print(json.dumps(inventory, indent=2))
