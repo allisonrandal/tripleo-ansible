@@ -181,8 +181,8 @@ class HeatFacts:
                         break
                     group_match = re.search("compute|controller|undercloud", server.name, flags=re.IGNORECASE)
                     if group_match:
-                          instance['heat_server_group'] = group_match.group(0)
-                          if self.group and self.group != instance['heat_server_group']:
+                          instance['heat_group'] = group_match.group(0)
+                          if self.group and self.group != instance['heat_group']:
                               break
                     instance.update(self.object_to_dict(server))
                     if self.address and self.address != instance['heat_networks']['ctlplane'][0]:
