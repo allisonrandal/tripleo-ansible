@@ -69,12 +69,18 @@ class HeatInventory(object):
         self._hclient = None
         self._nclient = None
 
+    @property
+    def stacks(self):
+        if not self.configs.stack:
+            return self.hclient.stacks.list()
+        else:
+            return [ self.hclient.stacks.get(stack) for stack in self.configs.stack ]
+
     def list(self):
         hostvars = {}
         groups = {}
         # XXX: need to config access details
-        for stack in self.configs.stack:
-            stack_obj = self.hclient.stacks.get(stack)
+        for stack_obj in self.stacks:
             if stack_obj.status != 'COMPLETE':
                 print(stack + " stack is incomplete, in state " + stack_obj.status)
                 sys.exit(1)
@@ -158,9 +164,6 @@ class HeatInventory(object):
 
 def main():
     configs = _parse_config()
-    if configs.stack is None:
-       print("stack(s) is/are required")
-       sys.exit(1)
     hi = HeatInventory(configs)
     if configs.list:
         hi.list()
