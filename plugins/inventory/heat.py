@@ -62,11 +62,7 @@ def _parse_config():
             default_config_files=default_config)
     if configs.auth_url is None:
         if "OS_AUTH_URL" in os.environ:
-            if "v3" in os.environ.get('OS_AUTH_URL'):
-                configs.auth_url = os.environ.get('OS_AUTH_URL')
-            else:
-                print "ERROR: Please set your OS_AUTH_URL to use v3"
-                sys.exit(1)
+            configs.auth_url = os.environ.get('OS_AUTH_URL')
     if configs.username is None:
         if "OS_USERNAME" in os.environ:
             configs.username = os.environ.get('OS_USERNAME')
@@ -76,6 +72,8 @@ def _parse_config():
     if configs.project_id is None: 
         if "OS_TENANT_NAME" in os.environ:
             configs.project_id = os.environ.get('OS_TENANT_NAME')
+    if '/v2.0' in configs.auth_url:
+        configs.auth_url = configs.auth_url.replace('/v2.0','/v3')
     return configs
 
 class HeatInventory(object):
