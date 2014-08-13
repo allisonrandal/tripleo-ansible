@@ -62,7 +62,10 @@ options:
    name:
      description:
         - Name of the instance to be rebuilt
-     required: true
+     default: None
+   instance_id:
+     description:
+        - Instance ID of the instance to be rebuilt
      default: None
    image_id:
      description:
@@ -146,14 +149,17 @@ def openstack_find_nova_addresses(addresses, ext_tag, key_name=None):
 def _rebuild_server(module, nova):
     server = None
     try:
-        servers = nova.servers.list(True, {'name': module.params['name']})
-        if servers:
-            # the {'name': module.params['name']} will also return servers
-            # with names that partially match the server name, so we have to
-            # strictly filter here
-            servers = [x for x in servers if x.name == module.params['name']]
+        if module.params.get('instance_id') is None:
+            servers = nova.servers.list(True, {'name': module.params['name']})
             if servers:
-                server = servers[0]
+                # the {'name': module.params['name']} will also return servers
+                # with names that partially match the server name, so we have to
+                # strictly filter here
+                servers = [x for x in servers if x.name == module.params['name']]
+                if servers:
+                    server = servers[0]
+        else:
+            server = nova.servers.get(module.params['instance_id'])
     except Exception, e:
         module.fail_json(msg = "Error in getting the server list: %s" % e.message)
     if not server:
