@@ -5,10 +5,10 @@
     local_action:
         module: heat_facts
         region_name: regionOne
-        login_username: admin
-        login_password: setpassword
-        login_tenant_name: admin
-        auth_url: http://192.0.2.1:5000/v3
+        login_username: '{{ lookup("env", "OS_USERNAME") }}'
+        login_password: '{{ lookup("env", "OS_PASSWORD") }}'
+        login_tenant_name: '{{ lookup("env", "OS_TENANT_NAME") }}'
+        auth_url: '{{ lookup("env", "OS_AUTH_URL") }}'
         stacks: all
 
   - name: Stacks debug info
