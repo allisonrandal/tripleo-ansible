@@ -187,6 +187,8 @@ class HeatFacts:
                     instance.update(self.object_to_dict(server))
                     if self.address and self.address != instance['heat_networks']['ctlplane'][0]:
                         break
+                    image = self.nova.images.get(instance['heat_image']['id'])
+                    instance['heat_image'].update(image.metadata)
                     instance['heat_stack_name'] = stack_name
                     instances_dict[server.name] = instance
 
