@@ -200,7 +200,8 @@ def _rebuild_server(module, nova):
 def main():
     argument_spec = openstack_argument_spec()
     argument_spec.update(dict(
-        name                            = dict(required=True),
+        name                            = dict(),
+        instance_id                     = dict(),
         image_id                        = dict(required=True),
         preserve_ephemeral              = dict(default=False, choices=[True, False]),
         wait                            = dict(default='yes', choices=['yes', 'no']),
