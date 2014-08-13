@@ -60,6 +60,22 @@ def _parse_config():
     configs.register_cli_opts(opts)
     configs(prog='heat-ansible-inventory',
             default_config_files=default_config)
+    if configs.auth_url is None:
+        if "OS_AUTH_URL" in os.environ:
+            if "v3" in os.environ.get('OS_AUTH_URL'):
+                configs.auth_url = os.environ.get('OS_AUTH_URL')
+            else:
+                print "ERROR: Please set your OS_AUTH_URL to use v3"
+                sys.exit(1)
+    if configs.username is None:
+        if "OS_USERNAME" in os.environ:
+            configs.username = os.environ.get('OS_USERNAME')
+    if configs.password is None:
+        if "OS_PASSWORD" in os.environ:
+            configs.password = os.environ.get('OS_PASSWORD')
+    if configs.project_id is None: 
+        if "OS_TENANT_NAME" in os.environ:
+            configs.project_id = os.environ.get('OS_TENANT_NAME')
     return configs
 
 class HeatInventory(object):
