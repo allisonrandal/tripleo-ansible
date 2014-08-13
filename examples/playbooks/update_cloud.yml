@@ -1,53 +1,37 @@
 ---
-vars:
-  overcloud-control-services:
-    - horizon
-    - heat-api
-    - heat-api-cfn
-    - heat-api-cloudwatch
-    - heat-engine
-    - glance-api
-    - cinder-api
-    - nova-api
-    - keystone
-    - neutron-server
-    - swift-proxy
-    - glance-registry
-    - cinder-scheduler
-    - nova-scheduler
-    - nova-conductor
-    - neutron-l3-agent
-    - neutron-metadata-agent
-    - neutron-dhcp-agent
-  overcloud-compute-services:
-    - nova-compute
-    - nova-novncproxy
-    - neutron-openvswitch-agent
-  undercloud-services:
-    - horizon
-    - glance-api
-    - heat-api
-    - heat-api-cfn
-    - heat-api-cloudwatch
-    - heat-engine
-    - ironic-api
-    - nova-api
-    - keystone
-    - neutron-server
-    - swift-proxy
-    - glance-registry
-    - nova-scheduler
-    - nova-conductor
-    - neutron-metadata-agent
-    - neutron-dhcp-agent
-    - ironic-conductor
-tasks:
-  - include: disable_os_collect_config.yml
-  - include: stop_cloud.yml control-services={{overcloud-control-services}} compute-services={{overcloud-compute-services}} undercloud-services={{undercloud-services}}
-  - include: rebuild.yml group=undercloud
-  - include: refresh_config.yml group=undercloud
-  - include: rebuild.yml group=controller
-  - include: refresh_config.yml group=controller
-  - include: rebuild.yml group=compute
-  - include: refresh_config.yaml group=compute
-  - include: start_cloud.yml control-services={{overcloud-control-services}} compute-services={{overcloud-compute-services}} undercloud-services={{undercloud-services}}
+- include: disable_os_collect_config.yml
+- hosts: undercloud
+  name: Disable Undercloud
+  tasks:
+    - service: name={{ item }} enabled=no state=stopped
+      with_items: undercloud-services
+- hosts: nova-compute
+  name: Disable Overcloud Compute
+  tasks:
+    - service: name={{ item }} enabled=no state=stopped
+      with_items: overcloud-compute-services
+- hosts: controller
+  name: Disable Overcloud Controller
+  tasks:
+    - service: name={{ item }} enabled=no state=stopped
+      with_items: overcloud-controller-services
+- hosts: all
+  name: Rebuild and Refresh
+  tasks:
+    - include: rebuild.yml
+    - include: refresh_config.yml
+- hosts: controller
+  name: Enable Overcloud Controller
+  tasks:
+    - service: name={{ item }} enabled=yes state=started
+      with_items: overcloud-controller-services
+- hosts: nova-compute
+  name: Enable Overcloud Compute
+  tasks:
+    - service: name={{ item }} enabled=yes state=started
+      with_items: overcloud-compute-services
+- hosts: undercloud
+  name: Enable Undercloud
+  tasks:
+    - service: name={{ item }} enabled=yes state=started
+      with_items: undercloud-services
