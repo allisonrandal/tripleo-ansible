@@ -4,17 +4,17 @@
   name: Disable Undercloud
   tasks:
     - service: name={{ item }} enabled=no state=stopped
-      with_items: undercloud-services
+      with_items: undercloud_services
 - hosts: nova-compute
   name: Disable Overcloud Compute
   tasks:
     - service: name={{ item }} enabled=no state=stopped
-      with_items: overcloud-compute-services
+      with_items: overcloud_compute_services
 - hosts: controller
   name: Disable Overcloud Controller
   tasks:
     - service: name={{ item }} enabled=no state=stopped
-      with_items: overcloud-controller-services
+      with_items: overcloud_controller_services
 - hosts: all
   name: Rebuild and Refresh
   tasks:
@@ -24,14 +24,14 @@
   name: Enable Overcloud Controller
   tasks:
     - service: name={{ item }} enabled=yes state=started
-      with_items: overcloud-controller-services
+      with_items: overcloud_controller_services
 - hosts: nova-compute
   name: Enable Overcloud Compute
   tasks:
     - service: name={{ item }} enabled=yes state=started
-      with_items: overcloud-compute-services
+      with_items: overcloud_compute_services
 - hosts: undercloud
   name: Enable Undercloud
   tasks:
     - service: name={{ item }} enabled=yes state=started
-      with_items: undercloud-services
+      with_items: undercloud_services
