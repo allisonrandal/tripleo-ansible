@@ -4,4 +4,4 @@
     instance_id: "{{ instance_id }}"
     image_id: "{{ rebuild_image_id }}"
     preserve_ephemeral: true
-    delegate_to: localhost
+  delegate_to: localhost
