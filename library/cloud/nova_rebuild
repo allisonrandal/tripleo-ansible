@@ -84,9 +84,9 @@ options:
      default: 'yes'
    wait_for:
      description:
-        - The amount of time the module should wait for the VM to get into active state
+        - Number of seconds the module should wait for the VM to get into active state
      required: false
-     default: 180
+     default: 600
 requirements: ["novaclient"]
 '''
 
@@ -205,7 +205,7 @@ def main():
         image_id                        = dict(required=True),
         preserve_ephemeral              = dict(default=False, choices=[True, False]),
         wait                            = dict(default='yes', choices=['yes', 'no']),
-        wait_for                        = dict(default=180),
+        wait_for                        = dict(default=600),
     ))
     module = AnsibleModule(argument_spec=argument_spec)
 
