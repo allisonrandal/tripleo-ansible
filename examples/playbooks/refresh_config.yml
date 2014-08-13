@@ -1,6 +1,9 @@
 ---
 # Update the collect files to contain metadata obtained from Heat
 #
+- name: "Ensure heat local-data directory exists"
+  sudo: yes
+  file: path=/var/lib/os-collect-config/local-data state=directory
 - name: "Write out metadata"
   sudo: yes
   template:
