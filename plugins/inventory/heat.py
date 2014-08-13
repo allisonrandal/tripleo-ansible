@@ -106,6 +106,12 @@ class HeatInventory(object):
                                 groups[group_name].append(addr)
                             else:
                                 groups[group_name] = [addr]
+                    if 'group' in server.metadata:
+                        group_name = server.metadata['group']
+                        if group_name in groups:
+                            groups[group_name].append(addr)
+                        else:
+                            groups[group_name] = [addr]
                     hostvars[addr] = {'heat_metadata':
                         self.hclient.resources.metadata(
                             stack_id, res.resource_name)}
