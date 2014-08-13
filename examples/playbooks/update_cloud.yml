@@ -18,17 +18,17 @@
     - service: name={{ item }} enabled=no state=stopped
       with_items: overcloud_controller_services
 - hosts: undercloud
-  name: Rebuild and Refresh
+  name: Rebuild and Refresh Undercloud
   tasks:
     - { include: rebuild.yml, instance_id: "{{ undercloud_instance_id }}", rebuild_image_id: "{{ undercloud_rebuild_image_id }}" }
     - include: refresh_config.yml
 - hosts: nova-compute
-  name: Rebuild and Refresh
+  name: Rebuild and Refresh Nova Compute
   tasks:
     - { include: rebuild.yml, instance_id: "{{ nova_compute_instance_id }}", rebuild_image_id: "{{ nova_compute_rebuild_image_id }}" }
     - include: refresh_config.yml
 - hosts: controller
-  name: Rebuild and Refresh
+  name: Rebuild and Refresh Controller
   tasks:
     - { include: rebuild.yml, instance_id: "{{ controller_instance_id }}", rebuild_image_id: "{{ controller_rebuild_image_id }}" }
     - include: refresh_config.yml
