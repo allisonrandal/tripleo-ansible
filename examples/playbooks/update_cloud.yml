@@ -7,11 +7,13 @@
       with_items: undercloud_services
 - hosts: nova-compute
   name: Disable Overcloud Compute
+  sudo: yes
   tasks:
     - service: name={{ item }} enabled=no state=stopped
       with_items: overcloud_compute_services
 - hosts: controller
   name: Disable Overcloud Controller
+  sudo: yes
   tasks:
     - service: name={{ item }} enabled=no state=stopped
       with_items: overcloud_controller_services
@@ -22,16 +24,19 @@
     - include: refresh_config.yml
 - hosts: controller
   name: Enable Overcloud Controller
+  sudo: yes
   tasks:
     - service: name={{ item }} enabled=yes state=started
       with_items: overcloud_controller_services
 - hosts: nova-compute
   name: Enable Overcloud Compute
+  sudo: yes
   tasks:
     - service: name={{ item }} enabled=yes state=started
       with_items: overcloud_compute_services
 - hosts: undercloud
   name: Enable Undercloud
+  sudo: yes
   tasks:
     - service: name={{ item }} enabled=yes state=started
       with_items: undercloud_services
