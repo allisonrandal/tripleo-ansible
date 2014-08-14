@@ -9,6 +9,3 @@
   template:
     src: templates/host_metadata.json.j2
     dest: /var/lib/os-collect-config/local-data/host_metadata.json
-- name: "Run os-collect-config"
-  sudo: yes
-  command: os-collect-config --force --one

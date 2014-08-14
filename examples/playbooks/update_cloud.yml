@@ -35,6 +35,9 @@
     - { include: rebuild.yml, instance_id: "{{ instance_id }}", rebuild_image_id: "{{ controller_rebuild_image_id }}" }
     - local_action: wait_for port=22 timeout=600 host="{{ inventory_hostname }}" search_regex=OpenSSH delay=10
     - include: refresh_config.yml
+    - name: "Run os-collect-config"
+      sudo: yes
+      command: os-collect-config --force --one
 - hosts: controller
   name: Enable Overcloud Controller
   sudo: yes
@@ -45,6 +48,9 @@
   name: Enable Overcloud Compute
   sudo: yes
   tasks:
+    - name: "Run os-collect-config"
+      sudo: yes
+      command: os-collect-config --force --one
     - service: name={{ item }} enabled=yes state=started
       with_items: overcloud_compute_services
 - hosts: undercloud
