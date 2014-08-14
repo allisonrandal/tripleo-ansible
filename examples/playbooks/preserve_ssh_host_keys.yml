@@ -1,5 +1,6 @@
 ---
 - name: "Create ssh host key backup directory"
+  sudo: yes
   file:
     path=/mnt/state/_ssh_host_keys
     state=directory
@@ -8,4 +9,5 @@
     mode=0700
 
 - name: "Preserve ssh host keys"
+  sudo: yes
   action: command cp -a /etc/ssh/ssh_host_* /mnt/state/_ssh_host_keys/
