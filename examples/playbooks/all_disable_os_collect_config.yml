@@ -1,0 +1,3 @@
+- hosts: all
+  tasks:
+    - include: disable_os_collect_config.yml
