@@ -3,14 +3,11 @@
 #
 # Run from the tripleo-ansible directory:
 #
-- hosts: all
-  name: Disable os-collect-config Heat polling
-  tasks:
-    - name: "Disable os-collect-config service"
-      sudo: yes
-      service: name=os-collect-config enabled=no state=stopped
-    - name: "Reconfigure os-collect-config for local collector"
-      sudo: yes
-      copy:
-        src: files/os-collect-config.conf
-        dest: /etc/os-collect-config.conf
+- name: "Disable os-collect-config service"
+  sudo: yes
+  service: name=os-collect-config enabled=no state=stopped
+- name: "Reconfigure os-collect-config for local collector"
+  sudo: yes
+  copy:
+    src: files/os-collect-config.conf
+    dest: /etc/os-collect-config.conf
