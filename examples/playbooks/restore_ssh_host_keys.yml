@@ -1,7 +1,7 @@
 ---
 - name: "Restore ssh host keys"
   sudo: yes
-  action: command mv /mnt/state/_ssh_host_keys/ssh_host_* /etc/ssh/
+  action: shell mv /mnt/state/_ssh_host_keys/ssh_host_* /etc/ssh/
 
 - name: "Remove ssh host key backup directory"
   sudo: yes
