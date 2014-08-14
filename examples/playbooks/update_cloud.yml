@@ -45,6 +45,9 @@
     - include: disable_os_collect_config.yml
 - hosts: controller
   tasks:
+    - name: "Work around apache2 starting up at boot w/o config..."
+      sudo: yes
+      service: name=apache2 enabled=no state=stopped
     - name: "Run os-collect-config"
       sudo: yes
       command: os-collect-config --force --one
