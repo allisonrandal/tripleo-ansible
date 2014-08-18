@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import ConfigParser
 import argparse
+import ConfigParser
 import subprocess
 
-parser = argparse.ArgumentParser(description='A foo that bars')
+parser = argparse.ArgumentParser(description='Exmaple iterative updater')
 parser.add_argument('-p', dest='playbook', help='main.yml', required=True)
 parser.add_argument(
     '-l',

@@ -35,7 +35,10 @@ for fname in os.listdir(args.path):
             if isinstance(x[dp], list):
                 for d in x[dp]:
                     name = d['name']
-                    if d.get('group', 'Heat::Ungrouped') in ('os-apply-config', 'Heat::Ungrouped'):
+                    if d.get('group', 'Heat::Ungrouped') in (
+                        'os-apply-config',
+                        'Heat::Ungrouped'
+                    ):
                         final_list.append((name, d['config']))
     for oname, oconfig in final_list:
         with open('%s%s' % (f, oname), 'w') as outfile:

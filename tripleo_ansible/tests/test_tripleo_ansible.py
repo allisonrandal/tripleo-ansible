@@ -22,7 +22,7 @@ Tests for `tripleo_ansible` module.
 from tripleo_ansible.tests import base
 
 
-class TestTripleo-ansible(base.TestCase):
+class TestTripleo_ansible(base.TestCase):
 
     def test_something(self):
         pass
